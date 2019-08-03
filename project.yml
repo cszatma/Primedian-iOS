@@ -1,0 +1,22 @@
+name: Primedian-iOS
+targets:
+  Primedian-iOS:
+    type: application
+    platform: iOS
+    deploymentTarget: "12.0"
+    sources: Primedian-iOS
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.christopherszatmary.Primedian-iOS
+  Primedian-iOSTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources: Primedian-iOSTests
+    dependencies:
+      - target: Primedian-iOS
+  Primedian-iOSUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources: Primedian-iOSUITests
+    dependencies:
+     - target: Primedian-iOS
