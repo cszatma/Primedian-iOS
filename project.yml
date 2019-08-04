@@ -1,4 +1,6 @@
 name: Primedian-iOS
+options:
+  findCarthageFrameworks: true
 targets:
   Primedian-iOS:
     type: application
@@ -8,15 +10,21 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.christopherszatmary.Primedian-iOS
+    dependencies:
+      - carthage: TinyConstraints
   Primedian-iOSTests:
     type: bundle.unit-test
     platform: iOS
     sources: Primedian-iOSTests
     dependencies:
       - target: Primedian-iOS
+      - carthage: Quick
+      - carthage: Nimble
   Primedian-iOSUITests:
     type: bundle.ui-testing
     platform: iOS
     sources: Primedian-iOSUITests
     dependencies:
-     - target: Primedian-iOS
+      - target: Primedian-iOS
+      - carthage: Quick
+      - carthage: Nimble
