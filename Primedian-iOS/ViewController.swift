@@ -131,4 +131,3 @@ class ViewController: UIViewController {
         spinnerView.topToBottom(of: calculateButton, offset: 15)
     }
 }
-
