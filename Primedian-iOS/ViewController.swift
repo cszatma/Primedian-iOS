@@ -77,14 +77,60 @@ class ViewController: UIViewController {
         return view
     }()
 
+    // MARK: - Methods
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupView()
     }
     
     @objc func handleCalculateButtonTouch(_ sender: UIButton) {
-        print("Calculating...")
         view.endEditing(true)
+        
+        guard let upperLimit = UInt64(upperLimitTextField.text ?? "") else {
+            updateView(withStatus: Status.error(APIError.invalidParameterType))
+            return
+        }
+        
+        DispatchQueue.global(qos: .background).async {
+            fetchResult(upperLimit: upperLimit) { [unowned self] status in
+                DispatchQueue.main.async {
+                    self.updateView(withStatus: status)
+                }
+            }
+        }
+        
+        updateView(withStatus: .loading)
+    }
+    
+    func updateView(withStatus status: Status) {
+        switch status {
+        case .loading:
+            resultLabelView.isHidden = true
+            errorLabelView.isHidden = true
+            spinnerView.startAnimating()
+        case .complete(let result):
+            spinnerView.stopAnimating()
+            let singleMedian = result.count == 1
+            let prefix = singleMedian ? "The Median Prime is:" : "The Median Primes are:"
+            let primes = singleMedian ? "\(result[0])" : "\(result[0]), \(result[1])"
+            resultLabelView.label.text = "\(prefix) \(primes)"
+            resultLabelView.isHidden = false
+        case .error(let error):
+            spinnerView.stopAnimating()
+            switch error {
+            case .missingParameter:
+                errorLabelView.label.text = "Please enter a valid upper limit."
+            case .invalidParameterType:
+                errorLabelView.label.text = "Please enter a valid positive integer as the upper limit."
+            case .invalidValue(let required):
+                let message = required == 2 ? "greater than 2." : "less than 100 million."
+                errorLabelView.label.text = "Please enter a number \(message)"
+            case .unknown(_):
+                errorLabelView.label.text = "An error occured. Please try again."
+            }
+            errorLabelView.isHidden = false
+        }
     }
 
     func setupView() {
