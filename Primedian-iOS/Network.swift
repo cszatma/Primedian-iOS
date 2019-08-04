@@ -34,13 +34,9 @@ enum APIError: Error {
     }
 }
 
-let baseURL = ProcessInfo.processInfo.environment["PRIMEDIAN_API_BASE_URL"]
+let baseURL = ProcessInfo.processInfo.environment["PRIMEDIAN_API_BASE_URL"] ?? "https://primedian.herokuapp.com"
 
 func fetchResult(upperLimit: UInt64, completion: @escaping (Status) -> Void) {
-    guard let baseURL = baseURL else {
-        fatalError("Required environment variable PRIMEDIAN_API_BASE_URL is not set!")
-    }
-    
     let primeURL = URL(string: "\(baseURL)/api/median-prime?n=\(upperLimit)")
     
     guard let url = primeURL else {
