@@ -49,36 +49,36 @@ func fetchResult(upperLimit: UInt64, completion: @escaping (Status) -> Void) {
     
     let task = URLSession.shared.dataTask(with: url) { data, response, error in
         if let err = error {
-            completion(Status.error(APIError.unknown(message: err.localizedDescription)))
+            completion(.error(.unknown(message: err.localizedDescription)))
             return
         }
         
         guard let res = response as? HTTPURLResponse, res.mimeType == "application/json", let data = data else {
-            completion(Status.error(APIError.unknown(message: "Invalid HTTP response")))
+            completion(.error(.unknown(message: "Invalid HTTP response")))
             return
         }
         
         if res.statusCode == 200 {
             do {
                 let json = try JSONDecoder().decode([UInt64].self, from: data)
-                completion(Status.complete(result: json))
+                completion(.complete(result: json))
             } catch let err {
-                completion(Status.error(APIError.unknown(message: err.localizedDescription)))
+                completion(.error(.unknown(message: err.localizedDescription)))
             }
         } else if res.statusCode == 400 {
             do {
                 let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: [String: Any]]
                 guard let type = json?["error"]?["type"] as? Int, let message = json?["error"]?["message"] as? String else {
-                    completion(Status.error(APIError.unknown(message: "Invalid JSON response")))
+                    completion(.error(.unknown(message: "Invalid JSON response")))
                     return
                 }
                 
-                completion(Status.error(APIError(code: type, message: message)))
+                completion(.error(APIError(code: type, message: message)))
             } catch let err {
-                completion(Status.error(APIError.unknown(message: err.localizedDescription)))
+                completion(.error(.unknown(message: err.localizedDescription)))
             }
         } else {
-            completion(Status.error(APIError.unknown(message: "Valid response was not received")))
+            completion(.error(.unknown(message: "Valid response was not received")))
         }
     }
     

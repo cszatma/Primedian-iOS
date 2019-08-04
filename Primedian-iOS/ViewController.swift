@@ -88,7 +88,7 @@ class ViewController: UIViewController {
         view.endEditing(true)
         
         guard let upperLimit = UInt64(upperLimitTextField.text ?? "") else {
-            updateView(withStatus: Status.error(APIError.invalidParameterType))
+            updateView(withStatus: .error(.invalidParameterType))
             return
         }
         
